@@ -27,6 +27,8 @@ class ViewController: NSViewController, NSTextViewDelegate {
     
     @IBOutlet var outPutTextView: NSTextView!
     
+    @IBOutlet var middleOutPutTextView: NSTextView!
+    
     @IBOutlet var rightOutPutTextView: NSTextView!
     
     @IBOutlet weak var lineFeedSwitch: NSSwitch!
@@ -77,26 +79,39 @@ class ViewController: NSViewController, NSTextViewDelegate {
         //=======================
         //       拼接数据
         //=======================
+        /// 左边最终的字符串
         var outPutString: String = ""
+        /// 右边最终的字符串
+        var rightOutPutString: String = ""
         for str in inputArray {
             let element = str.components(separatedBy: flag).last!.components(separatedBy: trailFlag).first!
-            let newLineString: String = "\"\(neddAddPrefix)\(element)\(needAddSuffix)\": \"\(element)\",\n"
+            let newVar: String = "\(neddAddPrefix)\(element)\(needAddSuffix)"
+            let newLineString: String = "\"\(newVar)\": \"\(element)\",\n"
             outPutString.append(contentsOf: newLineString)
+            
+            let rightNewLingString: String = "mapper <<< self.\(newVar) <-- \"rspDict[\(newVar)]!\"\n"
+            rightOutPutString.append(contentsOf: rightNewLingString)
         }
 
         self.outPutTextView.string = outPutString
         //print(inputArray)
+        
+        //=======================
+        //       中间
+        //=======================
+        var middleInputString = self.inputTextView.string
+        middleInputString = middleInputString.replacingOccurrences(of: "var   ", with: "var ")
+        middleInputString = middleInputString.replacingOccurrences(of: "var  ", with: "var ")
+        middleInputString = middleInputString.replacingOccurrences(of: "  :", with: ":")
+        middleInputString = middleInputString.replacingOccurrences(of: " :", with: ":")
+        middleInputString = middleInputString.replacingOccurrences(of: "var ", with: "var \(neddAddPrefix)")
+        middleInputString = middleInputString.replacingOccurrences(of: ":", with: "\(needAddSuffix):")
+        self.middleOutPutTextView.string = middleInputString
+        
         //=======================
         //        右边
         //=======================
-        var rightInputString = self.inputTextView.string
-        rightInputString = rightInputString.replacingOccurrences(of: "var   ", with: "var ")
-        rightInputString = rightInputString.replacingOccurrences(of: "var  ", with: "var ")
-        rightInputString = rightInputString.replacingOccurrences(of: "  :", with: ":")
-        rightInputString = rightInputString.replacingOccurrences(of: " :", with: ":")
-        rightInputString = rightInputString.replacingOccurrences(of: "var ", with: "var \(neddAddPrefix)")
-        rightInputString = rightInputString.replacingOccurrences(of: ":", with: "\(needAddSuffix):")
-        self.rightOutPutTextView.string = rightInputString
+        self.rightOutPutTextView.string = rightOutPutString
         
     }
     @IBAction func copyBtnClick(_ sender: Any) {
@@ -105,6 +120,11 @@ class ViewController: NSViewController, NSTextViewDelegate {
         pboard.setString(self.outPutTextView.string, forType: .string)  // 3
     }
     
+    @IBAction func middlecopyBtnClick(_ sender: Any) {
+        let pboard = NSPasteboard.general           // 1
+        pboard.clearContents()
+        pboard.setString(self.middleOutPutTextView.string, forType: .string)  // 3
+    }
     @IBAction func rightcopyBtnClick(_ sender: Any) {
         let pboard = NSPasteboard.general           // 1
         pboard.clearContents()
