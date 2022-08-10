@@ -82,14 +82,14 @@ class ViewController: NSViewController, NSTextViewDelegate {
         /// 左边最终的字符串
         var outPutString: String = ""
         /// 右边最终的字符串
-        var rightOutPutString: String = ""
+        var rightOutPutString: String = "let rspDict: [String: String] = CMF_KeyManager.getResponseDict(url_Type: <#类型#>)\n"
         for str in inputArray {
             let element = str.components(separatedBy: flag).last!.components(separatedBy: trailFlag).first!
             let newVar: String = "\(neddAddPrefix)\(element)\(needAddSuffix)"
             let newLineString: String = "\"\(newVar)\": \"\(element)\",\n"
             outPutString.append(contentsOf: newLineString)
             
-            let rightNewLingString: String = "mapper <<< self.\(newVar) <-- \"rspDict[\(newVar)]!\"\n"
+            let rightNewLingString: String = "mapper <<< self.\(newVar) <-- rspDict[\"\(newVar)\"]!\n"
             rightOutPutString.append(contentsOf: rightNewLingString)
         }
 
